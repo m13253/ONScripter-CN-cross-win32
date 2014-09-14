@@ -270,14 +270,14 @@ build_prepare() {
     patch -N -p0 -i "$startdir/src/libtiff-patch/tiff-4.0.3-CVE-2013-4232.patch"
 
     msg_info 'Patching SDL_mixer'
-    echo 'int main(void){return 0;}' >"$startdir/src/SDL_mixer-$ver_SDL_mixer/playmus.c"
-    echo 'int main(void){return 0;}' >"$startdir/src/SDL_mixer-$ver_SDL_mixer/playwave.c"
+    echo 'int main(void){return 0;}' >"$startdir/build/SDL_mixer-$ver_SDL_mixer/playmus.c"
+    echo 'int main(void){return 0;}' >"$startdir/build/SDL_mixer-$ver_SDL_mixer/playwave.c"
 
     rm -rf "$startdir/lib"
     mkdir -p "$startdir/lib"
     cd "$startdir"
 }
-build() {
+build_compile() {
     [ "$build_envcheck_ok" != "1" ] && build_envcheck
     cd "$startdir"
     msg_info 'Start building'
