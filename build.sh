@@ -368,7 +368,7 @@ main() {
 #    make
 #    make install
 
-    msg-info 'Building SDL_ttf'
+    msg_info 'Building SDL_ttf'
     cd "$startdir/build/SDL_ttf-$ver_SDL_ttf"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
     make
