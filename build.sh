@@ -285,8 +285,8 @@ build_compile() {
     export CC="$HOSTARCH-gcc"
     export CXX="$HOSTARCH-g++"
     export LD="$HOSTARCH-ld"
+    export RC="$HOSTARCH-windres"
     export STRIP="$HOSTARCH-strip"
-    export WINDRES="$HOSTARCH-windres"
     export CFLAGS="-I$startdir/lib/usr/include -L$startdir/lib/usr/lib$CFLAGS"
     export CPPFLAGS="-I$startdir/lib/usr/include $CPPFLAGS"
     export LDFLAGS="-L$startdir/lib/usr/lib $LDFLAGS"
@@ -397,8 +397,9 @@ build_compile() {
 
     msg_info 'Building SDL_mixer'
     cd "$startdir/build/SDL_mixer-$ver_SDL_mixer"
+    CFLAGS="-lSDL_mixer -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmodplug -lmikmod -lSDL -lpthread -lstdc++ $CFLAGS" \
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod -disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared --disable-smpegtest
-    make
+    make CFLAGS="-lSDL_mixer -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmodplug -lmikmod -lSDL -lpthread -lstdc++ $CFLAGS"
     make install
 
     msg_info 'Building SDL_ttf'
