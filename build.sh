@@ -203,15 +203,6 @@ main() {
         svn checkout svn://svn.icculus.org/smpeg/tags/release_$ver_smpeg "$startdir/src/smpeg"
     fi
 
-    ver_fluidsynth=1.1.6
-    if [ ! -e "$startdir/src/fluidsynth-${ver_fluidsynth}.tar.bz2" ]
-    then
-        msg_info "fetch fluidsynth $ver_fluidsynth"
-        wget -c -O "$startdir/src/fluidsynth-${ver_fluidsynth}.tar.bz2.part" http://downloads.sourceforge.net/sourceforge/fluidsynth/fluidsynth-${ver_fluidsynth}/fluidsynth-${ver_fluidsynth}.tar.bz2
-        mv "$startdir/src/fluidsynth-${ver_fluidsynth}.tar.bz2"{.part,}
-    fi
-
-
     ver_freetype=2.5.3
     if [ ! -e "$startdir/src/freetype-${ver_freetype}.tar.bz2" ]
     then
@@ -241,7 +232,6 @@ main() {
     tar xJf "$startdir/src/libvorbis-${ver_libvorbis}.tar.xz" -C "$startdir/build"
     tar xJf "$startdir/src/flac-${ver_flac}.tar.xz" -C "$startdir/build"
     cp -a "$startdir/src/smpeg" "$startdir/build/"
-    tar xjf "$startdir/src/fluidsynth-${ver_fluidsynth}.tar.bz2" -C "$startdir/build"
     tar xjf "$startdir/src/freetype-${ver_freetype}.tar.bz2" -C "$startdir/build"
 
     msg_info 'Patching source code'
@@ -342,19 +332,6 @@ main() {
     make
     make install
 
-    msg_info 'Building smpeg'
-    cd "$startdir/build/smpeg"
-    ./autogen.sh
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-sdltest --disable-gtk-player --disable-gtktest --disable-opengl-player
-    make
-    make install
-
-    msg_info 'Building fluidsynth'
-    cd "$startdir/build/fluidsynth-$ver_fluidsynth"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
-    make
-    make install
-
     msg_info 'Building freetype'
     cd "$startdir/build/freetype-$ver_freetype"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
@@ -364,6 +341,13 @@ main() {
     msg_info 'Building SDL'
     cd "$startdir/build/SDL-$ver_SDL"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-stdio-redirect
+    make
+    make install
+
+    msg_info 'Building smpeg'
+    cd "$startdir/build/smpeg"
+    ./autogen.sh
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-gtk-player --disable-gtktest --disable-opengl-player
     make
     make install
 
