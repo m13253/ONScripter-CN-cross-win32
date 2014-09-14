@@ -306,8 +306,8 @@ build_compile() {
 
     msg_info 'Building zlib'
     cd "$startdir/build/zlib-$ver_zlib"
-    make -fwin32/Makefile.gcc SHARED_MODE=0 prefix="$startdir/lib" DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include
-    make -fwin32/Makefile.gcc install SHARED_MODE=0 prefix="$startdir/lib" DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include
+    make -fwin32/Makefile.gcc SHARED_MODE=0 prefix="$startdir/lib" DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include AR="$AR" CC="$CC" CXX="$CXX" LD="$LD" RC="$RC" STRIP="$STRIP"
+    make -fwin32/Makefile.gcc install SHARED_MODE=0 prefix="$startdir/lib" DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include AR="$AR" CC="$CC" CXX="$CXX" LD="$LD" RC="$RC" STRIP="$STRIP"
 
     msg_info 'Building libpng'
     cd "$startdir/build/libpng-$ver_libpng"
