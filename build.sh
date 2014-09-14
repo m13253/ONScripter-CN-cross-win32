@@ -314,7 +314,7 @@ main() {
     make install
 
     msg_info 'Building libmikmod'
-    cd "$startdir/build/libmikmod-$ver_freetype"
+    cd "$startdir/build/libmikmod-$ver_libmikmod"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
     make
     make install
