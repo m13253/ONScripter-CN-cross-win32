@@ -13,6 +13,11 @@ msg_warn() {
 main() {
 
     startdir="$(pwd)"
+    if echo -n "$startdir" | grep -q ' '
+    then
+        msg_error 'Your working directory contains space'
+        exit 1
+    fi
     msg_info "Working directory is $startdir"
 
     msg_info 'Checking cross compile toolchain'
@@ -206,8 +211,8 @@ main() {
     msg_info 'Start building'
     rm -rf "$startdir/lib"
     mkdir -p "$startdir/lib"
-    export LDFLAGS="-L\"$startdir/lib/usr/lib\""
-    export CPPFLAGS="-I\"$startdir/lib/usr/include\""
+    export LDFLAGS="-L$startdir/lib/usr/lib"
+    export CPPFLAGS="-I$startdir/lib/usr/include"
 
     msg_info 'Building libiconv'
     cd "$startdir/build/libiconv-$ver_libiconv"
@@ -218,12 +223,12 @@ main() {
     msg_info 'Building bzip2'
     cd "$startdir/build/bzip2-$ver_bzip2"
     make
-    make install PREFIX="$startdir/lib"
+    make install PREFIX="$startdir/lib/usr"
 
     msg_info 'Building zlib'
     cd "$startdir/build/zlib-$ver_zlib"
-    make -fwin32/Makefile.gcc SHARED_MODE=0 CC=$HOSTARCH-gcc AR=$HOSTARCH-ar RC=$HOSTARCH-windres STRIP=$HOSTARCH-strip
-    make -fwin32/Makefile.gcc install SHARED_MODE=0 prefix=/usr DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include
+    make -fwin32/Makefile.gcc SHARED_MODE=0 CC="$HOSTARCH-gcc" AR="$HOSTARCH-ar" RC="$HOSTARCH-windres" STRIP="$HOSTARCH-strip" prefix="$startdir/lib" DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include
+    make -fwin32/Makefile.gcc install SHARED_MODE=0 CC="$HOSTARCH-gcc" AR="$HOSTARCH-ar" RC="$HOSTARCH-windres" STRIP="$HOSTARCH-strip" prefix="$startdir/lib" DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include
 
     msg_info 'Building libpng'
     cd "$startdir/build/libpng-$ver_libpng"
@@ -232,7 +237,7 @@ main() {
     make install DESTDIR="$startdir/lib"
 
     msg_info 'Building libjpeg-turbo'
-    cd "$startdir/build/lijpeg-turbo-$ver_libjpeg_turbo"
+    cd "$startdir/build/libjpeg-turbo-$ver_libjpeg_turbo"
     ./configure --prefix /usr --host "$HOSTARCH" --disable-shared --enable-static
     make
     make install DESTDIR="$startdir/lib"
@@ -265,7 +270,7 @@ main() {
 
     msg_info 'Building SDL_image'
     cd "$startdir/build/SDL_image-$ver_SDL_image"
-    LIBPNG_CFLAGS="-I\"$startdir/lib/usr/include/libpng16\"" LIBPNG_LIBS='-lpng16' LIBWEBP_CFLAGS=' ' LIBWEBP_LIBS='-lwebp' \
+    LIBPNG_CFLAGS="-I$startdir/lib/usr/include/libpng16" LIBPNG_LIBS='-lpng16' LIBWEBP_CFLAGS=' ' LIBWEBP_LIBS='-lwebp' \
     ./configure --prefix /usr --host "$HOSTARCH" --disable-shared --enable-static --disable-jpg-shared --disable-png-shared --disable-tif-shared --disable-webp-shared
     make
     make install DESTDIR="$startdir/lib"
