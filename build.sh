@@ -411,7 +411,7 @@ build() {
     cat >Makefile <<EOM
 CFLAGS += -c -DWIN32 -D_GNU_SOURCE=1 -D_REENTRANT -DUSE_CDROM -DUSE_OGG_VORBIS -DUTF8_CAPTION
 CFLAGS += -I$startdir/lib/usr/include/SDL -I$startdir/lib/usr/include/smpeg
-LDFLAGS += -mwindows -lSDL -lSDL_image -lSDL_mixer -lSDL_ttf -lsmpeg
+LDFLAGS += -mwindows -lbz2 -lSDL -lSDL_image -lSDL_mixer -lSDL_ttf -lsmpeg
 OBJSUFFIX = .o
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
