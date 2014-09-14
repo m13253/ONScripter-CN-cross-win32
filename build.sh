@@ -43,7 +43,6 @@ build_envcheck() {
     ver_libvorbis=1.3.4
     ver_flac=1.3.0
     ver_smpeg=0_4_5
-    ver_icu=53_1
     ver_harfbuzz=0.9.35
     ver_freetype=2.5.3
     build_envcheck_ok=1
@@ -209,13 +208,6 @@ build_fetch() {
         svn checkout svn://svn.icculus.org/smpeg/tags/release_$ver_smpeg "$startdir/src/smpeg"
     fi
 
-    if [ ! -e "$startdir/src/icu-${ver_icu}.tar.gz" ]
-    then
-        msg_info "fetch icu $ver_icu"
-        wget -c -O "$startdir/src/icu-${ver_icu}.tar.gz.part" http://download.icu-project.org/files/icu4c/53.1/icu4c-$ver_icu-src.tgz
-        mv "$startdir/src/icu-${ver_icu}.tar.gz"{.part,}
-    fi
-
     if [ ! -e "$startdir/src/harfbuzz-${ver_harfbuzz}.tar.bz2" ]
     then
         msg_info "fetch harfbuzz $ver_harfbuzz"
@@ -255,9 +247,6 @@ build_prepare() {
     tar xJf "$startdir/src/libvorbis-${ver_libvorbis}.tar.xz" -C "$startdir/build"
     tar xJf "$startdir/src/flac-${ver_flac}.tar.xz" -C "$startdir/build"
     cp -a "$startdir/src/smpeg" "$startdir/build/"
-    tar xzf "$startdir/src/icu-${ver_icu}.tar.gz" -C "$startdir/build"
-    cp -a "$startdir/build/icu" "$startdir/build/icu-build"
-    mv "$startdir/build/icu" "$startdir/build/icu-host"
     tar xjf "$startdir/src/harfbuzz-${ver_harfbuzz}.tar.bz2" -C "$startdir/build"
     tar xjf "$startdir/src/freetype-${ver_freetype}.tar.bz2" -C "$startdir/build"
 
@@ -279,6 +268,10 @@ build_prepare() {
     cd "$startdir/build/tiff-$ver_libtiff/tools"
     patch -N -p0 -i "$startdir/src/libtiff-patch/tiff-4.0.3-CVE-2013-4231.patch"
     patch -N -p0 -i "$startdir/src/libtiff-patch/tiff-4.0.3-CVE-2013-4232.patch"
+
+    msg_info 'Patching SDL_mixer'
+    echo 'int main(void){return 0;}' >"$startdir/src/SDL_mixer-$ver_SDL_mixer/playmus.c"
+    echo 'int main(void){return 0;}' >"$startdir/src/SDL_mixer-$ver_SDL_mixer/playwave.c"
 
     rm -rf "$startdir/lib"
     mkdir -p "$startdir/lib"
@@ -369,26 +362,16 @@ build() {
     make
     make install
 
-    msg_info 'Building icu'
-    cd "$startdir/build/icu-build/source"
-    CC=gcc CXX=g++ LD=ld ./configure --disable-shared --enable-static
-    CC=gcc CXX=g++ LD=ld make
-
-    cd "$startdir/build/icu-host/source"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --with-cross-build="$startdir/build/icu-build/source"
-    make
-    make install
-
     msg_info 'Building harfbuzz'
     cd "$startdir/build/harfbuzz-$ver_harfbuzz"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --with-glib=no --with-gobject=no --with-cairo=no --with-icu=no --with-graphite2=no --with-freetype=no --with-uniscribe=no --with-coretext=no
     make
     make install
 
     msg_info 'Building freetype'
     cd "$startdir/build/freetype-$ver_freetype"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
-    make
+    make CFLAGS="-c -I$startdir/lib/usr/include/harfbuzz $CPPFLAGS"
     make install
 
     msg_info 'Building SDL'
@@ -397,36 +380,37 @@ build() {
     make
     make install
 
-#    msg_info 'Building smpeg'
-#    cd "$startdir/build/smpeg"
-#    ./autogen.sh
-#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-gtk-player --disable-gtktest --disable-opengl-player
-#    make
-#    make install
-#
-#    msg_info 'Building SDL_image'
-#    cd "$startdir/build/SDL_image-$ver_SDL_image"
-#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-jpg-shared --disable-png-shared --disable-tif-shared --disable-webp-shared
-#    make
-#    make install
-#
-#    msg_info 'Building SDL_mixer'
-#    cd "$startdir/build/SDL_mixer-$ver_SDL_mixer"
-#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod -disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared --disable-smpegtest
-#    make
-#    make install
+    msg_info 'Building smpeg'
+    cd "$startdir/build/smpeg"
+    ./autogen.sh
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-gtk-player --disable-gtktest --disable-opengl-player
+    make
+    make install
+
+    msg_info 'Building SDL_image'
+    cd "$startdir/build/SDL_image-$ver_SDL_image"
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-jpg-shared --disable-png-shared --disable-tif-shared --disable-webp-shared
+    make
+    make install
+
+    msg_info 'Building SDL_mixer'
+    cd "$startdir/build/SDL_mixer-$ver_SDL_mixer"
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod -disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared --disable-smpegtest
+    make
+    make install
 
     msg_info 'Building SDL_ttf'
     cd "$startdir/build/SDL_ttf-$ver_SDL_ttf"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-sdltest
-    make
+    CFLAGS="-lstdc++ $CFLAGS" ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-sdltest
+    make CFLAGS="-lstdc++ $CFLAGS"
     make install
 
     msg_info 'Building ONScripter-CN'
     cd "$startdir/build/ONScripter-CN/jni/app_onscripter-32bpp/onscripter-20130317"
     cat >Makefile <<EOM
-CFLAGS += -c -DWIN32 -DUSE_CDROM -DUSE_OGG_VORBIS -DUTF8_CAPTION -I$startdir/lib/usr/include/smpeg
-LDFLAGS += -mwindows -lSDL -lSDL_image -lSDL_ttf -lsmpeg
+CFLAGS += -c -DWIN32 -D_GNU_SOURCE=1 -D_REENTRANT -DUSE_CDROM -DUSE_OGG_VORBIS -DUTF8_CAPTION
+CFLAGS += -I$startdir/lib/usr/include/SDL -I$startdir/lib/usr/include/smpeg
+LDFLAGS += -mwindows -lSDL -lSDL_image -lSDL_mixer -lSDL_ttf -lsmpeg
 OBJSUFFIX = .o
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
