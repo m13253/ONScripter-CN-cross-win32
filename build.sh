@@ -203,6 +203,22 @@ main() {
         svn checkout svn://svn.icculus.org/smpeg/tags/release_$ver_smpeg "$startdir/src/smpeg"
     fi
 
+    ver_icu=53_1
+    if [ ! -e "$startdir/src/icu-${ver_icu}.tar.gz" ]
+    then
+        msg_info "fetch icu $ver_icu"
+        wget -c -O "$startdir/src/icu-${ver_icu}.tar.gz.part" http://download.icu-project.org/files/icu4c/53.1/icu4c-$ver_icu-src.tgz
+        mv "$startdir/src/icu-${ver_icu}.tar.gz"{.part,}
+    fi
+
+    ver_harfbuzz=0.9.35
+    if [ ! -e "$startdir/src/harfbuzz-${ver_harfbuzz}.tar.bz2" ]
+    then
+        msg_info "fetch harfbuzz $ver_harfbuzz"
+        wget -c -O "$startdir/src/harfbuzz-${ver_harfbuzz}.tar.bz2.part" http://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${ver_harfbuzz}.tar.bz2
+        mv "$startdir/src/harfbuzz-${ver_harfbuzz}.tar.bz2"{.part,}
+    fi
+
     ver_freetype=2.5.3
     if [ ! -e "$startdir/src/freetype-${ver_freetype}.tar.bz2" ]
     then
@@ -232,6 +248,10 @@ main() {
     tar xJf "$startdir/src/libvorbis-${ver_libvorbis}.tar.xz" -C "$startdir/build"
     tar xJf "$startdir/src/flac-${ver_flac}.tar.xz" -C "$startdir/build"
     cp -a "$startdir/src/smpeg" "$startdir/build/"
+    tar xzf "$startdir/src/icu-${ver_icu}.tar.gz" -C "$startdir/build"
+    cp -a "$startdir/build/icu" "$startdir/build/icu-build"
+    mv "$startdir/build/icu" "$startdir/build/icu-host"
+    tar xjf "$startdir/src/harfbuzz-${ver_harfbuzz}.tar.bz2" -C "$startdir/build"
     tar xjf "$startdir/src/freetype-${ver_freetype}.tar.bz2" -C "$startdir/build"
 
     msg_info 'Patching source code'
@@ -266,73 +286,89 @@ main() {
     export MAKEFLAGS="-j$(nproc || echo 1) $MAKEFLAGS"
     export PKG_CONFIG_PATH="$startdir/lib/usr/lib/pkgconfig"
 
-    msg_info 'Building libiconv'
-    cd "$startdir/build/libiconv-$ver_libiconv"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+#    msg_info 'Building libiconv'
+#    cd "$startdir/build/libiconv-$ver_libiconv"
+#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+#    make
+#    make install
+#
+#    msg_info 'Building bzip2'
+#    cd "$startdir/build/bzip2-$ver_bzip2"
+#    make
+#    make install PREFIX="$startdir/lib/usr"
+#
+#    msg_info 'Building zlib'
+#    cd "$startdir/build/zlib-$ver_zlib"
+#    make -fwin32/Makefile.gcc SHARED_MODE=0 CC="$HOSTARCH-gcc" AR="$HOSTARCH-ar" RC="$HOSTARCH-windres" STRIP="$HOSTARCH-strip" prefix="$startdir/lib" DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include
+#    make -fwin32/Makefile.gcc install SHARED_MODE=0 CC="$HOSTARCH-gcc" AR="$HOSTARCH-ar" RC="$HOSTARCH-windres" STRIP="$HOSTARCH-strip" prefix="$startdir/lib" DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include
+#
+#    msg_info 'Building libpng'
+#    cd "$startdir/build/libpng-$ver_libpng"
+#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+#    make
+#    make install
+#
+#    msg_info 'Building libjpeg-turbo'
+#    cd "$startdir/build/libjpeg-turbo-$ver_libjpeg_turbo"
+#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+#    make
+#    make install
+#
+#    msg_info 'Building libtiff'
+#    cd "$startdir/build/tiff-$ver_libtiff"
+#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+#    make
+#    make install
+#
+#    msg_info 'Building giflib'
+#    cd "$startdir/build/giflib-$ver_giflib"
+#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+#    make
+#    make install
+#
+#    msg_info 'Building libwebp'
+#    cd "$startdir/build/libwebp"
+#    ./autogen.sh
+#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+#    make
+#    make install
+#
+#    msg_info 'Building libmikmod'
+#    cd "$startdir/build/libmikmod-$ver_libmikmod"
+#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+#    make
+#    make install
+#
+#    msg_info 'Building libogg'
+#    cd "$startdir/build/libogg-$ver_libogg"
+#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+#    make
+#    make install
+#
+#    msg_info 'Building libvorbis'
+#    cd "$startdir/build/libvorbis-$ver_libvorbis"
+#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+#    make
+#    make install
+#
+#    msg_info 'Building flac'
+#    cd "$startdir/build/flac-$ver_flac"
+#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+#    make
+#    make install
+
+    msg_info 'Building icu'
+    cd "$startdir/build/icu-build/source"
+    CC=gcc CXX=g++ LD=ld ./configure --disable-shared --enable-static
+    CC=gcc CXX=g++ LD=ld make
+
+    cd "$startdir/build/icu-host/source"
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --with-cross-build="$startdir/build/icu-build/source"
     make
     make install
 
-    msg_info 'Building bzip2'
-    cd "$startdir/build/bzip2-$ver_bzip2"
-    make
-    make install PREFIX="$startdir/lib/usr"
-
-    msg_info 'Building zlib'
-    cd "$startdir/build/zlib-$ver_zlib"
-    make -fwin32/Makefile.gcc SHARED_MODE=0 CC="$HOSTARCH-gcc" AR="$HOSTARCH-ar" RC="$HOSTARCH-windres" STRIP="$HOSTARCH-strip" prefix="$startdir/lib" DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include
-    make -fwin32/Makefile.gcc install SHARED_MODE=0 CC="$HOSTARCH-gcc" AR="$HOSTARCH-ar" RC="$HOSTARCH-windres" STRIP="$HOSTARCH-strip" prefix="$startdir/lib" DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include
-
-    msg_info 'Building libpng'
-    cd "$startdir/build/libpng-$ver_libpng"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
-    make
-    make install
-
-    msg_info 'Building libjpeg-turbo'
-    cd "$startdir/build/libjpeg-turbo-$ver_libjpeg_turbo"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
-    make
-    make install
-
-    msg_info 'Building libtiff'
-    cd "$startdir/build/tiff-$ver_libtiff"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
-    make
-    make install
-
-    msg_info 'Building giflib'
-    cd "$startdir/build/giflib-$ver_giflib"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
-    make
-    make install
-
-    msg_info 'Building libwebp'
-    cd "$startdir/build/libwebp"
-    ./autogen.sh
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
-    make
-    make install
-
-    msg_info 'Building libmikmod'
-    cd "$startdir/build/libmikmod-$ver_libmikmod"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
-    make
-    make install
-
-    msg_info 'Building libogg'
-    cd "$startdir/build/libogg-$ver_libogg"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
-    make
-    make install
-
-    msg_info 'Building libvorbis'
-    cd "$startdir/build/libvorbis-$ver_libvorbis"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
-    make
-    make install
-
-    msg_info 'Building flac'
-    cd "$startdir/build/flac-$ver_flac"
+    msg_info 'Building harfbuzz'
+    cd "$startdir/build/harfbuzz-$ver_harfbuzz"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
     make
     make install
@@ -349,19 +385,19 @@ main() {
     make
     make install
 
-    msg_info 'Building smpeg'
-    cd "$startdir/build/smpeg"
-    ./autogen.sh
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-gtk-player --disable-gtktest --disable-opengl-player
-    make
-    make install
-
-    msg_info 'Building SDL_image'
-    cd "$startdir/build/SDL_image-$ver_SDL_image"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-jpg-shared --disable-png-shared --disable-tif-shared --disable-webp-shared
-    make
-    make install
-
+#    msg_info 'Building smpeg'
+#    cd "$startdir/build/smpeg"
+#    ./autogen.sh
+#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-gtk-player --disable-gtktest --disable-opengl-player
+#    make
+#    make install
+#
+#    msg_info 'Building SDL_image'
+#    cd "$startdir/build/SDL_image-$ver_SDL_image"
+#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-jpg-shared --disable-png-shared --disable-tif-shared --disable-webp-shared
+#    make
+#    make install
+#
 #    msg_info 'Building SDL_mixer'
 #    cd "$startdir/build/SDL_mixer-$ver_SDL_mixer"
 #    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod -disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared --disable-smpegtest
@@ -387,7 +423,7 @@ include Makefile.onscripter
 EOM
     make
     cp onscripter.exe "$startdir/onscripter_g.exe"
-    $HOSTARCH-strip -s -o "$startdir/onscripter.exe" onscripter.exe
+    "$HOSTARCH-strip" -s -o "$startdir/onscripter.exe" onscripter.exe
     upx --best "$startdir/onscripter.exe" || msg_warn 'Failed to compress executable with UPX'
     msg_info 'Successfully built'
 
