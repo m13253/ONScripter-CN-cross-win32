@@ -103,27 +103,12 @@ main() {
         mv "$startdir/src/zlib-${ver_zlib}.tar.gz"{.part,}
     fi
 
-    ver_smpeg=0_4_5
-    if [ -e "$startdir/src/smpeg" ]
-    then
-        if [ "$BUILD_NO_UPDATE" == "1" ]
-        then
-            msg_warn 'Not updating smpeg since $BUILD_NO_UPDATE=1'
-        else
-            msg_info 'svn update smpeg'
-            svn update "$startdir/src/smpeg" || msg_warn 'Failed to update smpeg. You may be building an old version.'
-        fi
-    else
-        msg_info 'svn checkout smpeg'
-        svn checkout svn://svn.icculus.org/smpeg/tags/release_$ver_smpeg "$startdir/src/smpeg"
-    fi
-
     ver_libpng=1.6.12
-    if [ ! -e "$startdir/src/libpng-${ver_libpng}.tar.gz" ]
+    if [ ! -e "$startdir/src/libpng-${ver_libpng}.tar.xz" ]
     then
         msg_info "fetch libpng $ver_libpng"
-        wget -c -O "$startdir/src/libpng-${ver_libpng}.tar.gz.part" http://download.sourceforge.net/libpng/libpng-${ver_libpng}.tar.gz
-        mv "$startdir/src/libpng-${ver_libpng}.tar.gz"{.part,}
+        wget -c -O "$startdir/src/libpng-${ver_libpng}.tar.xz.part" http://download.sourceforge.net/libpng/libpng-${ver_libpng}.tar.xz
+        mv "$startdir/src/libpng-${ver_libpng}.tar.xz"{.part,}
     fi
     if [ ! -e "$startdir/src/libpng-$ver_libpng-apng.patch.gz" ]
     then
@@ -148,6 +133,14 @@ main() {
         mv "$startdir/src/libtiff-${ver_libtiff}.tar.gz"{.part,}
     fi
 
+    ver_giflib=5.1.0
+    if [ ! -e "$startdir/src/giflib-${ver_giflib}.tar.bz2" ]
+    then
+        msg_info "fetch giflib $ver_giflib"
+        wget -c -O "$startdir/src/giflib-${ver_giflib}.tar.bz2.part" http://downloads.sourceforge.net/sourceforge/giflib/giflib-${ver_giflib}.tar.bz2
+        mv "$startdir/src/giflib-${ver_giflib}.tar.bz2"{.part,}
+    fi
+
     if [ -e "$startdir/src/libwebp" ]
     then
         if [ "$BUILD_NO_UPDATE" == "1" ]
@@ -163,12 +156,59 @@ main() {
         git clone --mirror --branch master --depth 1 --single-branch https://github.com/webmproject/libwebp.git "$startdir/src/libwebp"
     fi
 
+    ver_libmikmod=3.3.7
+    if [ ! -e "$startdir/src/libmikmod-${ver_libmikmod}.tar.gz" ]
+    then
+        msg_info "fetch libmikmod $ver_libmikmod"
+        wget -c -O "$startdir/src/libmikmod-${ver_libmikmod}.tar.gz.part" http://downloads.sourceforge.net/sourceforge/mikmod/libmikmod/${ver_libmikmod}/libmikmod-${ver_libmikmod}.tar.gz
+        mv "$startdir/src/libmikmod-${ver_libmikmod}.tar.gz"{.part,}
+    fi
+
+    ver_libogg=1.3.2
+    if [ ! -e "$startdir/src/libogg-${ver_libogg}.tar.xz" ]
+    then
+        msg_info "fetch libogg $ver_libogg"
+        wget -c -O "$startdir/src/libogg-${ver_libogg}.tar.xz.part" http://downloads.xiph.org/releases/ogg/libogg-${ver_libogg}.tar.xz
+        mv "$startdir/src/libogg-${ver_libogg}.tar.xz"{.part,}
+    fi
+
+    ver_libvorbis=1.3.4
+    if [ ! -e "$startdir/src/libvorbis-${ver_libvorbis}.tar.xz" ]
+    then
+        msg_info "fetch libvorbis $ver_libvorbis"
+        wget -c -O "$startdir/src/libvorbis-${ver_libvorbis}.tar.xz.part" http://downloads.xiph.org/releases/vorbis/libvorbis-${ver_libvorbis}.tar.xz
+        mv "$startdir/src/libvorbis-${ver_libvorbis}.tar.xz"{.part,}
+    fi
+
+    ver_flac=1.3.0
+    if [ ! -e "$startdir/src/flac-${ver_flac}.tar.xz" ]
+    then
+        msg_info "fetch flac $ver_flac"
+        wget -c -O "$startdir/src/flac-${ver_flac}.tar.xz.part" http://downloads.xiph.org/releases/flac/flac-${ver_flac}.tar.xz
+        mv "$startdir/src/flac-${ver_flac}.tar.xz"{.part,}
+    fi
+
+    ver_smpeg=0_4_5
+    if [ -e "$startdir/src/smpeg" ]
+    then
+        if [ "$BUILD_NO_UPDATE" == "1" ]
+        then
+            msg_warn 'Not updating smpeg since $BUILD_NO_UPDATE=1'
+        else
+            msg_info 'svn update smpeg'
+            svn update "$startdir/src/smpeg" || msg_warn 'Failed to update smpeg. You may be building an old version.'
+        fi
+    else
+        msg_info 'svn checkout smpeg'
+        svn checkout svn://svn.icculus.org/smpeg/tags/release_$ver_smpeg "$startdir/src/smpeg"
+    fi
+
     ver_freetype=2.5.3
-    if [ ! -e "$startdir/src/freetype-${ver_freetype}.tar.gz" ]
+    if [ ! -e "$startdir/src/freetype-${ver_freetype}.tar.bz2" ]
     then
         msg_info "fetch freetype $ver_freetype"
-        wget -c -O "$startdir/src/freetype-${ver_freetype}.tar.gz.part" http://download.savannah.gnu.org/releases/freetype/freetype-${ver_freetype}.tar.gz
-        mv "$startdir/src/freetype-${ver_freetype}.tar.gz"{.part,}
+        wget -c -O "$startdir/src/freetype-${ver_freetype}.tar.bz2.part" http://download.savannah.gnu.org/releases/freetype/freetype-${ver_freetype}.tar.bz2
+        mv "$startdir/src/freetype-${ver_freetype}.tar.bz2"{.part,}
     fi
 
     msg_info 'Extracting source code'
@@ -183,11 +223,16 @@ main() {
     tar xzf "$startdir/src/bzip2-${ver_bzip2}.tar.gz" -C "$startdir/build"
     tar xzf "$startdir/src/zlib-${ver_zlib}.tar.gz" -C "$startdir/build"
     cp -a "$startdir/src/smpeg" "$startdir/build/"
-    tar xzf "$startdir/src/libpng-${ver_libpng}.tar.gz" -C "$startdir/build"
+    tar xJf "$startdir/src/libpng-${ver_libpng}.tar.xz" -C "$startdir/build"
     tar xzf "$startdir/src/libjpeg-turbo-${ver_libjpeg_turbo}.tar.gz" -C "$startdir/build"
     tar xzf "$startdir/src/libtiff-${ver_libtiff}.tar.gz" -C "$startdir/build"
+    tar xjf "$startdir/src/giflib-${ver_giflib}.tar.bz2" -C "$startdir/build"
     git clone "$startdir/src/libwebp" "$startdir/build/libwebp"
-    tar xzf "$startdir/src/freetype-${ver_freetype}.tar.gz" -C "$startdir/build"
+    tar xzf "$startdir/src/libmikmod-${ver_libmikmod}.tar.gz" -C "$startdir/build"
+    tar xJf "$startdir/src/libogg-${ver_libogg}.tar.xz" -C "$startdir/build"
+    tar xJf "$startdir/src/libvorbis-${ver_libvorbis}.tar.xz" -C "$startdir/build"
+    tar xJf "$startdir/src/flac-${ver_flac}.tar.xz" -C "$startdir/build"
+    tar xjf "$startdir/src/freetype-${ver_freetype}.tar.bz2" -C "$startdir/build"
 
     msg_info 'Patching source code'
 
@@ -213,12 +258,13 @@ main() {
     mkdir -p "$startdir/lib"
     export LDFLAGS="-L$startdir/lib/usr/lib"
     export CPPFLAGS="-I$startdir/lib/usr/include"
+    export PKG_CONFIG_PATH="$startdir/lib/usr/lib/pkgconfig"
 
     msg_info 'Building libiconv'
     cd "$startdir/build/libiconv-$ver_libiconv"
-    ./configure --prefix /usr --host "$HOSTARCH" --disable-shared --enable-static
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
     make
-    make install DESTDIR="$startdir/lib"
+    make install
 
     msg_info 'Building bzip2'
     cd "$startdir/build/bzip2-$ver_bzip2"
@@ -232,60 +278,88 @@ main() {
 
     msg_info 'Building libpng'
     cd "$startdir/build/libpng-$ver_libpng"
-    ./configure --prefix /usr --host "$HOSTARCH" --disable-shared --enable-static
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
     make
-    make install DESTDIR="$startdir/lib"
+    make install
 
     msg_info 'Building libjpeg-turbo'
     cd "$startdir/build/libjpeg-turbo-$ver_libjpeg_turbo"
-    ./configure --prefix /usr --host "$HOSTARCH" --disable-shared --enable-static
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
     make
-    make install DESTDIR="$startdir/lib"
+    make install
 
     msg_info 'Building libtiff'
     cd "$startdir/build/tiff-$ver_libtiff"
-    ./configure --prefix /usr --host "$HOSTARCH" --disable-shared --enable-static
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
     make
-    make install DESTDIR="$startdir/lib"
+    make install
+
+    msg_info 'Building giflib'
+    cd "$startdir/build/giflib-$ver_giflib"
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+    make
+    make install
 
     msg_info 'Building libwebp'
     cd "$startdir/build/libwebp"
     ./autogen.sh
-    ./configure --prefix /usr --host "$HOSTARCH" --disable-shared --enable-static
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
     make
-    make install DESTDIR="$startdir/lib"
+    make install
 
     msg_info 'Building freetype'
-    cd "$startdir/build/freetype"
-    ./autogen.sh
-    ./configure --prefix /usr --host "$HOSTARCH" --disable-shared --enable-static
+    cd "$startdir/build/freetype-$ver_freetype"
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
     make
-    make install DESTDIR="$startdir/lib"
+    make install
+
+    msg_info 'Building libmikmod'
+    cd "$startdir/build/libmikmod-$ver_freetype"
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+    make
+    make install
+
+    msg_info 'Building libogg'
+    cd "$startdir/build/libogg-$ver_libogg"
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+    make
+    make install
+
+    msg_info 'Building libvorbis'
+    cd "$startdir/build/libvorbis-$ver_libvorbis"
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+    make
+    make install
+
+    msg_info 'Building flac'
+    cd "$startdir/build/flac-$ver_flac"
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+    make
+    make install
 
     msg_info 'Building SDL'
     cd "$startdir/build/SDL-$ver_SDL"
-    ./configure --prefix /usr --host "$HOSTARCH" --disable-shared --enable-static --disable-stdio-redirect
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-stdio-redirect
     make
-    make install DESTDIR="$startdir/lib"
+    make install
 
     msg_info 'Building SDL_image'
     cd "$startdir/build/SDL_image-$ver_SDL_image"
-    LIBPNG_CFLAGS="-I$startdir/lib/usr/include/libpng16" LIBPNG_LIBS='-lpng16' LIBWEBP_CFLAGS=' ' LIBWEBP_LIBS='-lwebp' \
-    ./configure --prefix /usr --host "$HOSTARCH" --disable-shared --enable-static --disable-jpg-shared --disable-png-shared --disable-tif-shared --disable-webp-shared
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-jpg-shared --disable-png-shared --disable-tif-shared --disable-webp-shared
     make
-    make install DESTDIR="$startdir/lib"
+    make install
 
     msg_info 'Building SDL_mixer'
     cd "$startdir/build/SDL_mixer-$ver_SDL_mixer"
-    ./configure --prefix /usr --host "$HOSTARCH" --disable-shared --enable-static
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
     make
-    make install DESTDIR="$startdir/lib"
+    make install
 
     msg-info 'Building SDL_ttf'
     cd "$startdir/build/SDL_ttf-$ver_SDL_ttf"
-    ./configure --prefix /usr --host "$HOSTARCH" --disable-shared --enable-static
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
     make
-    make install DESTDIR="$startdir/lib"
+    make install
 
     msg_info 'Building ONScripter-CN'
     cd "$startdir/build/ONScripter-CN/jni/app_onscripter-32bpp/onscripter-20130317"
