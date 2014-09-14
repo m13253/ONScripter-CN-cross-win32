@@ -256,8 +256,13 @@ main() {
     msg_info 'Start building'
     rm -rf "$startdir/lib"
     mkdir -p "$startdir/lib"
-    export LDFLAGS="-L$startdir/lib/usr/lib $LDFLAGS"
+    export AR="$HOSTARCH-ar"
+    export CC="$HOSTARCH-gcc"
+    export CXX="$HOSTARCH-g++"
+    export LD="$HOSTARCH-ld"
+    export CFLAGS="-I$startdir/lib/usr/include -L$startdir/lib/usr/lib$CFLAGS"
     export CPPFLAGS="-I$startdir/lib/usr/include $CPPFLAGS"
+    export LDFLAGS="-L$startdir/lib/usr/lib $LDFLAGS"
     export MAKEFLAGS="-j$(nproc || echo 1) $MAKEFLAGS"
     export PKG_CONFIG_PATH="$startdir/lib/usr/lib/pkgconfig"
 
@@ -357,11 +362,11 @@ main() {
     make
     make install
 
-    msg_info 'Building SDL_mixer'
-    cd "$startdir/build/SDL_mixer-$ver_SDL_mixer"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod-shared --disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared
-    make
-    make install
+#    msg_info 'Building SDL_mixer'
+#    cd "$startdir/build/SDL_mixer-$ver_SDL_mixer"
+#    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod -disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared --disable-smpegtest
+#    make
+#    make install
 
     msg-info 'Building SDL_ttf'
     cd "$startdir/build/SDL_ttf-$ver_SDL_ttf"
@@ -373,7 +378,7 @@ main() {
     cd "$startdir/build/ONScripter-CN/jni/app_onscripter-32bpp/onscripter-20130317"
     cat >Makefile <<EOM
 CFLAGS += -c -DWIN32 -DUSE_CDROM -DUSE_OGG_VORBIS -DUTF8_CAPTION -I$startdir/lib/usr/include/smpeg
-LDFLAGS += -mwindows -lSDL -lSDL_image -lSDL_mixer -lSDL_ttf -lsmpeg
+LDFLAGS += -mwindows -lSDL -lSDL_image -lSDL_ttf -lsmpeg
 OBJSUFFIX = .o
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
