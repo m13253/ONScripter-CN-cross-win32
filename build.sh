@@ -203,6 +203,15 @@ main() {
         svn checkout svn://svn.icculus.org/smpeg/tags/release_$ver_smpeg "$startdir/src/smpeg"
     fi
 
+    ver_fluidsynth=1.1.6
+    if [ ! -e "$startdir/src/fluidsynth-${ver_fluidsynth}.tar.bz2" ]
+    then
+        msg_info "fetch fluidsynth $ver_fluidsynth"
+        wget -c -O "$startdir/src/fluidsynth-${ver_fluidsynth}.tar.bz2.part" http://downloads.sourceforge.net/sourceforge/fluidsynth/fluidsynth-${ver_fluidsynth}/fluidsynth-${ver_fluidsynth}.tar.bz2
+        mv "$startdir/src/fluidsynth-${ver_fluidsynth}.tar.bz2"{.part,}
+    fi
+
+
     ver_freetype=2.5.3
     if [ ! -e "$startdir/src/freetype-${ver_freetype}.tar.bz2" ]
     then
@@ -222,7 +231,6 @@ main() {
     tar xzf "$startdir/src/libiconv-${ver_libiconv}.tar.gz" -C "$startdir/build"
     tar xzf "$startdir/src/bzip2-${ver_bzip2}.tar.gz" -C "$startdir/build"
     tar xzf "$startdir/src/zlib-${ver_zlib}.tar.gz" -C "$startdir/build"
-    cp -a "$startdir/src/smpeg" "$startdir/build/"
     tar xJf "$startdir/src/libpng-${ver_libpng}.tar.xz" -C "$startdir/build"
     tar xzf "$startdir/src/libjpeg-turbo-${ver_libjpeg_turbo}.tar.gz" -C "$startdir/build"
     tar xzf "$startdir/src/libtiff-${ver_libtiff}.tar.gz" -C "$startdir/build"
@@ -232,6 +240,8 @@ main() {
     tar xJf "$startdir/src/libogg-${ver_libogg}.tar.xz" -C "$startdir/build"
     tar xJf "$startdir/src/libvorbis-${ver_libvorbis}.tar.xz" -C "$startdir/build"
     tar xJf "$startdir/src/flac-${ver_flac}.tar.xz" -C "$startdir/build"
+    cp -a "$startdir/src/smpeg" "$startdir/build/"
+    tar xjf "$startdir/src/fluidsynth-${ver_fluidsynth}.tar.bz2" -C "$startdir/build"
     tar xjf "$startdir/src/freetype-${ver_freetype}.tar.bz2" -C "$startdir/build"
 
     msg_info 'Patching source code'
@@ -256,8 +266,9 @@ main() {
     msg_info 'Start building'
     rm -rf "$startdir/lib"
     mkdir -p "$startdir/lib"
-    export LDFLAGS="-L$startdir/lib/usr/lib"
-    export CPPFLAGS="-I$startdir/lib/usr/include"
+    export LDFLAGS="-L$startdir/lib/usr/lib $LDFLAGS"
+    export CPPFLAGS="-I$startdir/lib/usr/include $CPPFLAGS"
+    export MAKEFLAGS="-j$(nproc || echo 1) $MAKEFLAGS"
     export PKG_CONFIG_PATH="$startdir/lib/usr/lib/pkgconfig"
 
     msg_info 'Building libiconv'
@@ -307,12 +318,6 @@ main() {
     make
     make install
 
-    msg_info 'Building freetype'
-    cd "$startdir/build/freetype-$ver_freetype"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
-    make
-    make install
-
     msg_info 'Building libmikmod'
     cd "$startdir/build/libmikmod-$ver_libmikmod"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
@@ -337,6 +342,25 @@ main() {
     make
     make install
 
+    msg_info 'Building smpeg'
+    cd "$startdir/build/smpeg"
+    ./autogen.sh
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-sdltest --disable-gtk-player --disable-gtktest --disable-opengl-player
+    make
+    make install
+
+    msg_info 'Building fluidsynth'
+    cd "$startdir/build/fluidsynth-$ver_fluidsynth"
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+    make
+    make install
+
+    msg_info 'Building freetype'
+    cd "$startdir/build/freetype-$ver_freetype"
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+    make
+    make install
+
     msg_info 'Building SDL'
     cd "$startdir/build/SDL-$ver_SDL"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-stdio-redirect
@@ -351,7 +375,7 @@ main() {
 
     msg_info 'Building SDL_mixer'
     cd "$startdir/build/SDL_mixer-$ver_SDL_mixer"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod-shared --disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared
     make
     make install
 
@@ -364,8 +388,8 @@ main() {
     msg_info 'Building ONScripter-CN'
     cd "$startdir/build/ONScripter-CN/jni/app_onscripter-32bpp/onscripter-20130317"
     cat >Makefile <<EOM
-CFLAGS += -c -DWIN32 -DUSE_CDROM -DUSE_OGG_VORBIS -DUTF8_CAPTION
-LDFLAGS += -lSDL -lSDL_image -lSDL_mixer -lSDL_ttf
+CFLAGS += -c -DWIN32 -DUSE_CDROM -DUSE_OGG_VORBIS -DUTF8_CAPTION -I$startdir/lib/usr/include/smpeg
+LDFLAGS += -mwindows -lSDL -lSDL_image -lSDL_mixer -lSDL_ttf
 OBJSUFFIX = .o
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
@@ -373,6 +397,9 @@ TARGET = onscripter
 include Makefile.onscripter
 EOM
     make
+    cp onscripter.exe "$startdir/onscripter_g.exe"
+    $HOSTARCH-strip -s -o "$startdir/onscripter.exe" onscripter.exe
+    upx --best "$startdir/onscripter.exe" || msg_warn 'Failed to compress executable with UPX'
     msg_info 'Successfully built'
 
 }
