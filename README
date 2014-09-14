@@ -1,0 +1,7 @@
+Cross compile script to win32 for ONScripter-CN
+===============================================
+
+Install MinGW-w64 cross compile toolchain.
+For example, on ArchLinux, sudo pacman -S mingw-w64-toolchain
+
+Then run ./build.sh and wait.
