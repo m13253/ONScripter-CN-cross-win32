@@ -285,6 +285,7 @@ build() {
     export CC="$HOSTARCH-gcc"
     export CXX="$HOSTARCH-g++"
     export LD="$HOSTARCH-ld"
+    export STRIP="$HOSTARCH-strip"
     export CFLAGS="-I$startdir/lib/usr/include -L$startdir/lib/usr/lib$CFLAGS"
     export CPPFLAGS="-I$startdir/lib/usr/include $CPPFLAGS"
     export LDFLAGS="-L$startdir/lib/usr/lib $LDFLAGS"
@@ -304,8 +305,8 @@ build() {
 
     msg_info 'Building zlib'
     cd "$startdir/build/zlib-$ver_zlib"
-    make -fwin32/Makefile.gcc SHARED_MODE=0 CC="$HOSTARCH-gcc" AR="$HOSTARCH-ar" RC="$HOSTARCH-windres" STRIP="$HOSTARCH-strip" prefix="$startdir/lib" DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include
-    make -fwin32/Makefile.gcc install SHARED_MODE=0 CC="$HOSTARCH-gcc" AR="$HOSTARCH-ar" RC="$HOSTARCH-windres" STRIP="$HOSTARCH-strip" prefix="$startdir/lib" DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include
+    make -fwin32/Makefile.gcc SHARED_MODE=0 prefix="$startdir/lib" DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include
+    make -fwin32/Makefile.gcc install SHARED_MODE=0 prefix="$startdir/lib" DESTDIR="$startdir/lib" LIBRARY_PATH=/usr/lib INCLUDE_PATH=/usr/include
 
     msg_info 'Building libpng'
     cd "$startdir/build/libpng-$ver_libpng"
@@ -419,7 +420,7 @@ include Makefile.onscripter
 EOM
     make
     cp onscripter.exe "$startdir/onscripter_g.exe"
-    "$HOSTARCH-strip" -s -o "$startdir/onscripter.exe" onscripter.exe
+    "$STRIP" -s -o "$startdir/onscripter.exe" onscripter.exe
     upx --best "$startdir/onscripter.exe" || msg_warn 'Failed to compress executable with UPX'
     msg_info 'Successfully built'
     cd "$startdir"
