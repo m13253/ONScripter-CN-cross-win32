@@ -286,6 +286,7 @@ build_compile() {
     export CXX="$HOSTARCH-g++"
     export LD="$HOSTARCH-ld"
     export STRIP="$HOSTARCH-strip"
+    export WINDRES="$HOSTARCH-windres"
     export CFLAGS="-I$startdir/lib/usr/include -L$startdir/lib/usr/lib$CFLAGS"
     export CPPFLAGS="-I$startdir/lib/usr/include $CPPFLAGS"
     export LDFLAGS="-L$startdir/lib/usr/lib $LDFLAGS"
