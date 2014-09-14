@@ -389,7 +389,7 @@ main() {
     cd "$startdir/build/ONScripter-CN/jni/app_onscripter-32bpp/onscripter-20130317"
     cat >Makefile <<EOM
 CFLAGS += -c -DWIN32 -DUSE_CDROM -DUSE_OGG_VORBIS -DUTF8_CAPTION -I$startdir/lib/usr/include/smpeg
-LDFLAGS += -mwindows -lSDL -lSDL_image -lSDL_mixer -lSDL_ttf
+LDFLAGS += -mwindows -lSDL -lSDL_image -lSDL_mixer -lSDL_ttf -lsmpeg
 OBJSUFFIX = .o
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
