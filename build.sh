@@ -224,6 +224,7 @@ build_fetch() {
     fi
 
     if [ ! -e "$startdir/src/lua-${ver_lua}.tar.gz" ]
+    then
         msg_info "fetch lua $ver_lua"
         wget -c -O "$startdir/src/lua-${ver_lua}.tar.bz2.part" http://www.lua.org/ftp/lua-${ver_lua}.tar.gz
         mv "$startdir/src/lua-${ver_lua}.tar.bz2"{.part,}
