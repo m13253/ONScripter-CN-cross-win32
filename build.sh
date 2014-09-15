@@ -252,6 +252,9 @@ build_prepare() {
 
     msg_info 'Patching source code'
 
+    msg_info 'Patching bzip2'
+    sed -i -e 's/sys\\stat.h/sys\/stat.h/' "$startdir/build/bzip2-$ver_bzip2/bzip2.c"
+
     msg_info 'Patching libpng-apng'
     cd "$startdir/build/libpng-$ver_libpng"
     gzip -c -d "$startdir/src/libpng-$ver_libpng-apng.patch.gz" | patch -N -p1
@@ -273,6 +276,10 @@ build_prepare() {
     echo 'int main(void){return 0;}' >"$startdir/build/SDL_mixer-$ver_SDL_mixer/playmus.c"
     echo 'int main(void){return 0;}' >"$startdir/build/SDL_mixer-$ver_SDL_mixer/playwave.c"
 
+    msg_info 'Patching SDL_ttf'
+    echo 'int main(void){return 0;}' >"$startdir/build/SDL_ttf-$ver_SDL_ttf/glfont.c"
+    echo 'int main(void){return 0;}' >"$startdir/build/SDL_ttf-$ver_SDL_ttf/showfont.c"
+
     rm -rf "$startdir/lib"
     mkdir -p "$startdir/lib"
     cd "$startdir"
@@ -285,7 +292,8 @@ build_compile() {
     export CC="$HOSTARCH-gcc"
     export CXX="$HOSTARCH-g++"
     export STRIP="$HOSTARCH-strip"
-    export CFLAGS="-I$startdir/lib/usr/include -L$startdir/lib/usr/lib$CFLAGS"
+    export CFLAGS="-I$startdir/lib/usr/include -L$startdir/lib/usr/lib $CFLAGS"
+    export CXXLAGS="-I$startdir/lib/usr/include -L$startdir/lib/usr/lib $CXXFLAGS"
     export CPPFLAGS="-I$startdir/lib/usr/include $CPPFLAGS"
     export LDFLAGS="-L$startdir/lib/usr/lib $LDFLAGS"
     export MAKEFLAGS="-j$(nproc || echo 1) $MAKEFLAGS"
@@ -299,8 +307,9 @@ build_compile() {
 
     msg_info 'Building bzip2'
     cd "$startdir/build/bzip2-$ver_bzip2"
-    make
-    make install PREFIX="$startdir/lib/usr"
+    make libbz2.a AR="$AR" CC="$CC" RANLIB="$HOSTARCH-ranlib"
+    install libbz2.a "$startdir/lib/usr/lib/libbz2.a"
+    cp bzlib.h "$startdir/lib/usr/include/bzlib.h"
 
     msg_info 'Building zlib'
     cd "$startdir/build/zlib-$ver_zlib"
@@ -395,7 +404,7 @@ build_compile() {
 
     msg_info 'Building SDL_mixer'
     cd "$startdir/build/SDL_mixer-$ver_SDL_mixer"
-    CFLAGS="-lSDL_mixer -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmodplug -lmikmod -lSDL -lpthread -lstdc++ $CFLAGS" \
+    #CFLAGS="-lSDL_mixer -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmodplug -lmikmod -lSDL -lpthread -lstdc++ $CFLAGS" \
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod -disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared --disable-smpegtest
     make CFLAGS="-lSDL_mixer -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmodplug -lmikmod -lSDL -lpthread -lstdc++ $CFLAGS"
     make install
@@ -403,7 +412,7 @@ build_compile() {
     msg_info 'Building SDL_ttf'
     cd "$startdir/build/SDL_ttf-$ver_SDL_ttf"
     CFLAGS="-lstdc++ $CFLAGS" ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-sdltest
-    make CFLAGS="-lstdc++ $CFLAGS"
+    make CFLAGS="$(pkg-config freetype2 --cflags) -I$startdir/lib/usr/include/SDL -lstdc++ $CFLAGS"
     make install
 
     msg_info 'Building ONScripter-CN'
@@ -411,7 +420,8 @@ build_compile() {
     cat >Makefile <<EOM
 CFLAGS += -c -DWIN32 -D_GNU_SOURCE=1 -D_REENTRANT -DUSE_CDROM -DUSE_OGG_VORBIS -DUTF8_CAPTION
 CFLAGS += -I$startdir/lib/usr/include/SDL -I$startdir/lib/usr/include/smpeg
-LDFLAGS += -mwindows -lbz2 -lSDL -lSDL_image -lSDL_mixer -lSDL_ttf -lsmpeg
+LIBS += -mwindows -L$startdir/lib/usr/lib
+LIBS += -lSDL -lSDL_image -lSDL_mixer -lSDL_ttf -lsmpeg -lbz2
 OBJSUFFIX = .o
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
