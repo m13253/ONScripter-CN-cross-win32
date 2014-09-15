@@ -308,6 +308,8 @@ build_compile() {
     export MAKEFLAGS="-j$(nproc || echo 1) $MAKEFLAGS"
     export PKG_CONFIG_PATH="$startdir/lib/usr/lib/pkgconfig"
 
+if false;then
+
     msg_info 'Building libiconv'
     cd "$startdir/build/libiconv-$ver_libiconv"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
@@ -419,7 +421,7 @@ build_compile() {
     msg_info 'Building SDL_mixer'
     cd "$startdir/build/SDL_mixer-$ver_SDL_mixer"
     #CFLAGS="-lSDL_mixer -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmodplug -lmikmod -lSDL -lpthread -lstdc++ $CFLAGS" \
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod -disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared --disable-smpegtest
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod -disable-music-native-midi -disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared --disable-smpegtest
     make CFLAGS="-lSDL_mixer -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmodplug -lmikmod -lSDL -lpthread -lstdc++ $CFLAGS"
     make install
 
@@ -428,6 +430,8 @@ build_compile() {
     CFLAGS="-lstdc++ $CFLAGS" ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-sdltest
     make CFLAGS="$(pkg-config freetype2 --cflags) -I$startdir/lib/usr/include/SDL -lstdc++ $CFLAGS"
     make install
+
+fi
 
     msg_info 'Building ONScripter-CN'
     cd "$startdir/build/ONScripter-CN/jni/app_onscripter-32bpp/onscripter-20130317"
