@@ -395,7 +395,7 @@ build_compile() {
     msg_info 'Building lua'
     cd "$startdir/build/lua-$ver_lua"
     make PLAT=mingw INSTALL_TOP="$startdir/lib/usr" CC="$CC" MYCFLAGS="$CFLAGS" AR="$AR rcu" RANLIB="$HOSTARCH-ranlib"
-    make install PLAT=mingw INSTALL_TOP="$startdir/lib/usr" CC="$CC" MYCFLAGS="$CFLAGS" AR="$AR rcu" RANLIB="$HOSTARCH-ranlib"
+    make install PLAT=mingw INSTALL_TOP="$startdir/lib/usr" TO_BIN= CC="$CC" MYCFLAGS="$CFLAGS" AR="$AR rcu" RANLIB="$HOSTARCH-ranlib"
 
     msg_info 'Building SDL'
     cd "$startdir/build/SDL-$ver_SDL"
