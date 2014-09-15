@@ -45,6 +45,7 @@ build_envcheck() {
     ver_smpeg=0_4_5
     ver_harfbuzz=0.9.35
     ver_freetype=2.5.3
+    ver_lua=5.2.3
     build_envcheck_ok=1
 }
 build_fetch() {
@@ -221,6 +222,13 @@ build_fetch() {
         wget -c -O "$startdir/src/freetype-${ver_freetype}.tar.bz2.part" http://download.savannah.gnu.org/releases/freetype/freetype-${ver_freetype}.tar.bz2
         mv "$startdir/src/freetype-${ver_freetype}.tar.bz2"{.part,}
     fi
+
+    if [ ! -e "$startdir/src/lua-${ver_lua}.tar.gz" ]
+        msg_info "fetch lua $ver_lua"
+        wget -c -O "$startdir/src/lua-${ver_lua}.tar.bz2.part" http://www.lua.org/ftp/lua-${ver_lua}.tar.gz
+        mv "$startdir/src/lua-${ver_lua}.tar.bz2"{.part,}
+    fi
+
     cd "$startdir"
 }
 build_prepare() {
@@ -381,6 +389,12 @@ build_compile() {
     cd "$startdir/build/freetype-$ver_freetype"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
     make CFLAGS="-c -I$startdir/lib/usr/include/harfbuzz $CPPFLAGS"
+    make install
+
+    msg_info 'Building lua'
+    cd "$startdir/build/lua-$ver_lua"
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+    make
     make install
 
     msg_info 'Building SDL'
