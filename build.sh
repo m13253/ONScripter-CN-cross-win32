@@ -395,7 +395,7 @@ build_compile() {
     msg_info 'Building lua'
     cd "$startdir/build/lua-$ver_lua"
     make PLAT=mingw INSTALL_TOP="$startdir/lib/usr" CC="$CC" MYCFLAGS="$CFLAGS" AR="$AR rcu" RANLIB="$HOSTARCH-ranlib"
-    make install PLAT=mingw INSTALL_TOP="$startdir/lib/usr" TO_BIN= CC="$CC" MYCFLAGS="$CFLAGS" AR="$AR rcu" RANLIB="$HOSTARCH-ranlib"
+    make install PLAT=mingw INSTALL_TOP="$startdir/lib/usr" TO_BIN='lua.exe luac.exe' CC="$CC" MYCFLAGS="$CFLAGS" AR="$AR rcu" RANLIB="$HOSTARCH-ranlib"
 
     msg_info 'Building SDL'
     cd "$startdir/build/SDL-$ver_SDL"
@@ -435,7 +435,7 @@ build_compile() {
 CFLAGS += -c -DWIN32 -D_GNU_SOURCE=1 -D_REENTRANT -DUSE_CDROM -DUSE_OGG_VORBIS -DUSE_LUA -DUTF8_CAPTION
 CFLAGS += -I$startdir/lib/usr/include/SDL -I$startdir/lib/usr/include/smpeg
 LIBS += -mwindows -L$startdir/lib/usr/lib
-LIBS += -lSDL -lSDL_image -lSDL_mixer -lSDL_ttf -lsmpeg -llua -lbz2
+LIBS += -lSDL_image -lwebp -lgif -ltiff -ljpeg -lpng -lSDL_mixer -lFLAC++ -lFLAC -lvorbis -lvorbisfile -logg -lSDL_ttf -lharfbuzz -lfreetype -lSDLmain -lSDL -lsmpeg -llua -lbz2 -lz
 OBJSUFFIX = .o
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
