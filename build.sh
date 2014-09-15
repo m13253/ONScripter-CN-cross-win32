@@ -45,7 +45,7 @@ build_envcheck() {
     ver_smpeg=0_4_5
     ver_harfbuzz=0.9.35
     ver_freetype=2.5.3
-    ver_lua=5.2.3
+    ver_lua=5.1.4
     build_envcheck_ok=1
 }
 build_fetch() {
@@ -226,8 +226,8 @@ build_fetch() {
     if [ ! -e "$startdir/src/lua-${ver_lua}.tar.gz" ]
     then
         msg_info "fetch lua $ver_lua"
-        wget -c -O "$startdir/src/lua-${ver_lua}.tar.bz2.part" http://www.lua.org/ftp/lua-${ver_lua}.tar.gz
-        mv "$startdir/src/lua-${ver_lua}.tar.bz2"{.part,}
+        wget -c -O "$startdir/src/lua-${ver_lua}.tar.gz.part" http://www.lua.org/ftp/lua-${ver_lua}.tar.gz
+        mv "$startdir/src/lua-${ver_lua}.tar.gz"{.part,}
     fi
 
     cd "$startdir"
