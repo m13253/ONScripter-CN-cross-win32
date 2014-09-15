@@ -432,10 +432,10 @@ build_compile() {
     msg_info 'Building ONScripter-CN'
     cd "$startdir/build/ONScripter-CN/jni/app_onscripter-32bpp/onscripter-20130317"
     cat >Makefile <<EOM
-CFLAGS += -c -DWIN32 -D_GNU_SOURCE=1 -D_REENTRANT -DUSE_CDROM -DUSE_OGG_VORBIS -DUTF8_CAPTION
+CFLAGS += -c -DWIN32 -D_GNU_SOURCE=1 -D_REENTRANT -DUSE_CDROM -DUSE_OGG_VORBIS -DUSE_LUA -DUTF8_CAPTION
 CFLAGS += -I$startdir/lib/usr/include/SDL -I$startdir/lib/usr/include/smpeg
 LIBS += -mwindows -L$startdir/lib/usr/lib
-LIBS += -lSDL -lSDL_image -lSDL_mixer -lSDL_ttf -lsmpeg -lbz2
+LIBS += -lSDL -lSDL_image -lSDL_mixer -lSDL_ttf -lsmpeg -llua -lbz2
 OBJSUFFIX = .o
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
