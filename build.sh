@@ -258,6 +258,7 @@ build_prepare() {
     cp -a "$startdir/src/smpeg" "$startdir/build/"
     tar xjf "$startdir/src/harfbuzz-${ver_harfbuzz}.tar.bz2" -C "$startdir/build"
     tar xjf "$startdir/src/freetype-${ver_freetype}.tar.bz2" -C "$startdir/build"
+    tar xzf "$startdir/src/lua-${ver_lua}.tar.gz" -C "$startdir/build"
 
     msg_info 'Patching source code'
 
