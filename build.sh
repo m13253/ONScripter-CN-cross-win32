@@ -358,7 +358,7 @@ build_compile() {
 
     msg_info 'Building libmikmod'
     cd "$startdir/build/libmikmod-$ver_libmikmod"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-alsa --disable-pulseaudio --disable-oss --disable-osx --disable-mac --enable-win --enable-ds --disable-dl
     make
     make install
 
