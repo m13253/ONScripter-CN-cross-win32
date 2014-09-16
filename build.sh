@@ -422,7 +422,7 @@ build_compile() {
     msg_info 'Building SDL_mixer'
     cd "$startdir/build/SDL_mixer-$ver_SDL_mixer"
     LIBS="$LIBS -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmikmod" \
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod --disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared --disable-smpegtest
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod-shared --disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared --disable-smpegtest
     make LIBS="$LIBS -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmikmod"
     make install
 
@@ -438,7 +438,7 @@ build_compile() {
 CFLAGS += -c -DWIN32 -D_GNU_SOURCE=1 -D_REENTRANT -DUSE_CDROM -DUSE_OGG_VORBIS -DUSE_LUA -DUTF8_CAPTION
 CFLAGS += -I$startdir/lib/usr/include/SDL -I$startdir/lib/usr/include/smpeg
 LIBS += -L$startdir/lib/usr/lib
-LIBS += -static -static-libgcc -static-libstdc++ -lmingw32 -lSDLmain -lSDL_image -lwebp -lgif -ltiff -ljpeg -lpng -lSDL_mixer -lFLAC++ -lFLAC -lvorbisfile -lvorbis -logg -lSDL_ttf -lharfbuzz -lfreetype -lSDL -lpthread -lsmpeg -llua -lbz2 -lz -lwinmm -lddraw -ldxguid -lgdi32 -mwindows
+LIBS += -static -static-libgcc -static-libstdc++ -lmingw32 -lSDLmain -lSDL_image -lwebp -lgif -ltiff -ljpeg -lpng -lSDL_mixer -lFLAC++ -lFLAC -lvorbisfile -lvorbis -logg -lmikmod -lSDL_ttf -lharfbuzz -lfreetype -lSDL -lpthread -lsmpeg -llua -lbz2 -lz -lwinmm -lddraw -ldxguid -lgdi32 -mwindows
 OBJSUFFIX = .o
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
