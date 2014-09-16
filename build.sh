@@ -422,7 +422,7 @@ if false;then
     msg_info 'Building SDL_mixer'
     cd "$startdir/build/SDL_mixer-$ver_SDL_mixer"
     LIBS="$LIBS -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmikmod" \
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod -disable-music-native-midi -disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared --disable-smpegtest
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod --disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared --disable-smpegtest
     make LIBS="$LIBS -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmikmod"
     make install
 
