@@ -382,15 +382,22 @@ build_compile() {
     make
     make install
 
+    msg_info 'Building freetype (1 pass)'
+    cd "$startdir/build/freetype-$ver_freetype"
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --without-harfbuzz
+    make CFLAGS="-c -I$startdir/lib/usr/include/harfbuzz $CPPFLAGS"
+    make install
+    make distclean
+
     msg_info 'Building harfbuzz'
     cd "$startdir/build/harfbuzz-$ver_harfbuzz"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --with-glib=no --with-gobject=no --with-cairo=no --with-icu=no --with-graphite2=no --with-freetype=no --with-uniscribe=no --with-coretext=no
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --without-glib --without-gobject --without-cairo --without-icu --without-graphite2 --with-freetype --without-uniscribe --without-coretext
     make
     make install
 
-    msg_info 'Building freetype'
+    msg_info 'Building freetype (2 pass)'
     cd "$startdir/build/freetype-$ver_freetype"
-    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
+    ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --with-harfbuzz
     make CFLAGS="-c -I$startdir/lib/usr/include/harfbuzz $CPPFLAGS"
     make install
 
