@@ -308,6 +308,8 @@ build_compile() {
     export MAKEFLAGS="-j$(nproc || echo 1) $MAKEFLAGS"
     export PKG_CONFIG_PATH="$startdir/lib/usr/lib/pkgconfig"
 
+if false;then
+
     msg_info 'Building libiconv'
     cd "$startdir/build/libiconv-$ver_libiconv"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
@@ -430,13 +432,15 @@ build_compile() {
     make CFLAGS="$(pkg-config freetype2 --cflags) -I$startdir/lib/usr/include/SDL -lstdc++ $CFLAGS"
     make install
 
+fi
+
     msg_info 'Building ONScripter-CN'
     cd "$startdir/build/ONScripter-CN/jni/app_onscripter-32bpp/onscripter-20130317"
     cat >Makefile <<EOM
 CFLAGS += -c -DWIN32 -D_GNU_SOURCE=1 -D_REENTRANT -DUSE_CDROM -DUSE_OGG_VORBIS -DUSE_LUA -DUTF8_CAPTION
 CFLAGS += -I$startdir/lib/usr/include/SDL -I$startdir/lib/usr/include/smpeg
 LIBS += -L$startdir/lib/usr/lib
-LIBS += -static -static-libgcc -static-libstdc++ -lmingw32 -lSDL_image -lwebp -lgif -ltiff -ljpeg -lpng -lSDL_mixer -lFLAC++ -lFLAC -lvorbis -lvorbisfile -logg -lSDL_ttf -lharfbuzz -lfreetype -lSDLmain -lSDL -lpthread -lsmpeg -llua -lbz2 -lz -lwinmm -lddraw -ldxguid -lgdi32 -mwindows
+LIBS += -static -static-libgcc -static-libstdc++ -lmingw32 -lSDLmain -lSDL_image -lwebp -lgif -ltiff -ljpeg -lpng -lSDL_mixer -lFLAC++ -lFLAC -lvorbisfile -lvorbis -logg -lSDL_ttf -lharfbuzz -lfreetype -lSDL -lpthread -lsmpeg -llua -lbz2 -lz -lwinmm -lddraw -ldxguid -lgdi32 -mwindows
 OBJSUFFIX = .o
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
@@ -444,9 +448,18 @@ TARGET = onscripter
 include Makefile.onscripter
 EOM
     make
-    cp onscripter "$startdir/onscripter_g.exe"
-    "$HOSTARCH-strip" -s -o "$startdir/onscripter.exe" onscripter
-    upx --best "$startdir/onscripter.exe" || msg_warn 'Failed to compress executable with UPX'
+
+    msg_info 'Compressing ONScripter-CN'
+    install -Dm0755 onscripter "$startdir/onscripter_g.exe"
+    "$HOSTARCH-strip" -s onscripter
+    rm -f "$startdir/onscripter.exe"
+    if upx --best -o"$startdir/onscripter.exe" onscripter
+    then
+        chmod 755 "$startdir/onscripter.exe" || true
+    else
+        msg_warn 'Failed to compress executable with UPX'
+        install -Dm0755 onscripter "$startdir/onscripter.exe"
+    fi
     msg_info 'Successfully built'
     cd "$startdir"
 }
