@@ -7,5 +7,4 @@ For example, on ArchLinux, `sudo pacman -S mingw-w64-toolchain`
 Then run `./build.sh` and wait.
 
 If anything goes wrong after trying twice,
-please submit an issue attaching the log.
-Log can be generated with `./build.sh 2>&1 | tee log.txt`
+please submit an issue attaching build.log.

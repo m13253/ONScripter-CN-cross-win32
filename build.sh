@@ -477,5 +477,5 @@ main() {
 }
 if [ "$BASH_SOURCE" == "$0" ]
 then
-    main
+    main 2>&1 | build.log
 fi
