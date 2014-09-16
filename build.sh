@@ -477,5 +477,5 @@ main() {
 }
 if [ "$BASH_SOURCE" == "$0" ]
 then
-    main >build.log 2>&1
+    main 2>&1 | tee build.log
 fi
