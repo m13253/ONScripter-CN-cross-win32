@@ -308,8 +308,6 @@ build_compile() {
     export MAKEFLAGS="-j$(nproc || echo 1) $MAKEFLAGS"
     export PKG_CONFIG_PATH="$startdir/lib/usr/lib/pkgconfig"
 
-if false;then
-
     msg_info 'Building libiconv'
     cd "$startdir/build/libiconv-$ver_libiconv"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
@@ -414,15 +412,16 @@ if false;then
 
     msg_info 'Building SDL_image'
     cd "$startdir/build/SDL_image-$ver_SDL_image"
+    LIBS="$LIBS -lmingw32 -lSDLmain -lSDL -lwinmm -lddraw -ldxguid -lwinmm -lddraw -ldxguid -lwebp -lgif -ltiff -ljpeg -lpng" \
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-jpg-shared --disable-png-shared --disable-tif-shared --disable-webp-shared
-    make
+    make LIBS="$LIBS -lmingw32 -lSDLmain -lSDL -lwinmm -lddraw -ldxguid -lwinmm -lddraw -ldxguid -lwebp -lgif -ltiff -ljpeg -lpng"
     make install
 
     msg_info 'Building SDL_mixer'
     cd "$startdir/build/SDL_mixer-$ver_SDL_mixer"
-    #CFLAGS="-lSDL_mixer -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmodplug -lmikmod -lSDL -lpthread -lstdc++ $CFLAGS" \
+    LIBS="$LIBS -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmikmod" \
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-music-cmd --disable-music-mod -disable-music-native-midi -disable-music-ogg-shared --disable-music-flac-shared --disable-music-mp3-shared --disable-smpegtest
-    make CFLAGS="-lSDL_mixer -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmodplug -lmikmod -lSDL -lpthread -lstdc++ $CFLAGS"
+    make LIBS="$LIBS -lFLAC -lvorbisfile -lvorbis -logg -lsmpeg -lmikmod"
     make install
 
     msg_info 'Building SDL_ttf'
@@ -431,15 +430,13 @@ if false;then
     make CFLAGS="$(pkg-config freetype2 --cflags) -I$startdir/lib/usr/include/SDL -lstdc++ $CFLAGS"
     make install
 
-fi
-
     msg_info 'Building ONScripter-CN'
     cd "$startdir/build/ONScripter-CN/jni/app_onscripter-32bpp/onscripter-20130317"
     cat >Makefile <<EOM
 CFLAGS += -c -DWIN32 -D_GNU_SOURCE=1 -D_REENTRANT -DUSE_CDROM -DUSE_OGG_VORBIS -DUSE_LUA -DUTF8_CAPTION
 CFLAGS += -I$startdir/lib/usr/include/SDL -I$startdir/lib/usr/include/smpeg
 LIBS += -L$startdir/lib/usr/lib
-LIBS += -static -static-libgcc -static-libstdc++ -lmingw32 -lSDL_image -lwebp -lgif -ltiff -ljpeg -lpng -lSDL_mixer -lFLAC++ -lFLAC -lvorbis -lvorbisfile -logg -lSDL_ttf -lharfbuzz -lfreetype -lSDLmain -lSDL -lsmpeg -llua -lbz2 -lz -lwinmm -lddraw -ldxguid -lgdi32 -mwindows
+LIBS += -static -static-libgcc -static-libstdc++ -lmingw32 -lSDL_image -lwebp -lgif -ltiff -ljpeg -lpng -lSDL_mixer -lFLAC++ -lFLAC -lvorbis -lvorbisfile -logg -lSDL_ttf -lharfbuzz -lfreetype -lSDLmain -lSDL -lpthread -lsmpeg -llua -lbz2 -lz -lwinmm -lddraw -ldxguid -lgdi32 -mwindows
 OBJSUFFIX = .o
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
