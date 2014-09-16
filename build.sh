@@ -27,6 +27,7 @@ build_envcheck() {
         msg_error "Cannot find cross compile toolchain for $HOSTARCH"
         exit 2
     fi
+
     ver_SDL=1.2.15
     ver_SDL_image=1.2.12
     ver_SDL_mixer=1.2.12
@@ -46,6 +47,7 @@ build_envcheck() {
     ver_harfbuzz=0.9.35
     ver_freetype=2.5.3
     ver_lua=5.1.4
+
     build_envcheck_ok=1
 }
 build_fetch() {
@@ -308,8 +310,6 @@ build_compile() {
     export MAKEFLAGS="-j$(nproc || echo 1) $MAKEFLAGS"
     export PKG_CONFIG_PATH="$startdir/lib/usr/lib/pkgconfig"
 
-if false;then
-
     msg_info 'Building libiconv'
     cd "$startdir/build/libiconv-$ver_libiconv"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static
@@ -432,8 +432,6 @@ if false;then
     make CFLAGS="$(pkg-config freetype2 --cflags) -I$startdir/lib/usr/include/SDL -lstdc++ $CFLAGS"
     make install
 
-fi
-
     msg_info 'Building ONScripter-CN'
     cd "$startdir/build/ONScripter-CN/jni/app_onscripter-32bpp/onscripter-20130317"
     cat >Makefile <<EOM
@@ -460,6 +458,7 @@ EOM
         msg_warn 'Failed to compress executable with UPX'
         install -Dm0755 onscripter "$startdir/onscripter.exe"
     fi
+
     msg_info 'Successfully built'
     cd "$startdir"
 }
