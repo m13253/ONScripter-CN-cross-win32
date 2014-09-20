@@ -46,7 +46,7 @@ build_envcheck() {
     ver_smpeg=0_4_5
     ver_harfbuzz=0.9.35
     ver_freetype=2.5.3
-    ver_lua=5.1.4
+    ver_lua=5.1.5
 
     build_envcheck_ok=1
 }
@@ -64,11 +64,11 @@ build_fetch() {
         else
             msg_info 'git fetch ONScripter-CN'
             cd "$startdir/src/ONScripter-CN"
-            git fetch --prune origin master || msg_warn 'Failed to update ONScripter-CN. You may be building an old version.'
+            git fetch --prune --progress origin master || msg_warn 'Failed to update ONScripter-CN. You may be building an old version.'
         fi
     else
         msg_info 'git clone ONScripter-CN'
-        git clone --mirror --branch master --depth 1 --single-branch https://github.com/m13253/ONScripter-CN.git "$startdir/src/ONScripter-CN"
+        git clone --mirror --branch master --depth 1 --single-branch --progress https://github.com/natdon/ONScripter-CN.git "$startdir/src/ONScripter-CN"
     fi
 
     if [ ! -e "$startdir/src/SDL-${ver_SDL}.tar.gz" ]
@@ -162,11 +162,11 @@ build_fetch() {
         else
             msg_info 'git fetch libwebp'
             cd "$startdir/src/libwebp"
-            git fetch --prune origin master || msg_warn 'Failed to update libwebp. You may be building an old version.'
+            git fetch --prune --progress origin master || msg_warn 'Failed to update libwebp. You may be building an old version.'
         fi
     else
         msg_info 'git clone libwebp'
-        git clone --mirror --branch master --depth 1 --single-branch https://github.com/webmproject/libwebp.git "$startdir/src/libwebp"
+        git clone --mirror --branch master --depth 1 --single-branch --progress https://github.com/webmproject/libwebp.git "$startdir/src/libwebp"
     fi
 
     if [ ! -e "$startdir/src/libmikmod-${ver_libmikmod}.tar.gz" ]
@@ -442,12 +442,12 @@ build_compile() {
     make install
 
     msg_info 'Building ONScripter-CN'
-    cd "$startdir/build/ONScripter-CN/jni/app_onscripter-32bpp/onscripter-20130317"
+    cd "$startdir/build/ONScripter-CN/jni/onscripter-20130812"
     cat >Makefile <<EOM
-CFLAGS += -c -DWIN32 -D_GNU_SOURCE=1 -D_REENTRANT -DUSE_CDROM -DUSE_OGG_VORBIS
+CFLAGS += -c -DWIN32 -D_GNU_SOURCE=1 -D_REENTRANT -DUTF8_CAPTION -DUSE_CDROM -DUSE_OGG_VORBIS -DUSE_SMPEG -DUSE_LUA
 CFLAGS += -I$startdir/lib/usr/include/SDL -I$startdir/lib/usr/include/smpeg
 LIBS += -L$startdir/lib/usr/lib
-LIBS += -static -static-libgcc -static-libstdc++ -lmingw32 -lSDLmain -lSDL_image -lwebp -lgif -ltiff -ljpeg -lpng -lSDL_mixer -lFLAC++ -lFLAC -lvorbisfile -lvorbis -logg -lmikmod -lSDL_ttf -lharfbuzz -lfreetype -lSDL -lpthread -lsmpeg -llua -lbz2 -lz -lwinmm -lddraw -ldxguid -lgdi32 -mwindows
+LIBS += -static -static-libgcc -static-libstdc++ -lmingw32 -lSDLmain -lSDL_image -lwebp -lgif -ltiff -ljpeg -lpng -lSDL_mixer -lFLAC++ -lFLAC -lvorbisfile -lvorbis -logg -lmikmod -lSDL_ttf -lharfbuzz -lfreetype -lSDL -lpthread -lsmpeg -llua5.1 -lbz2 -lz -lwinmm -lddraw -ldxguid -lgdi32 -mwindows
 OBJSUFFIX = .o
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
