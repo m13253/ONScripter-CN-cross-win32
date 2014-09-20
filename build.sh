@@ -442,14 +442,13 @@ build_compile() {
     make install
 
     msg_info 'Building ONScripter-CN'
-    cd "$startdir/build/ONScripter-CN/jni/onscripter-20130812"
+    cd "$startdir/build/ONScripter-CN/jni/app_onscripter-32bpp/onscripter-20130317"
     cat >Makefile <<EOM
-CFLAGS += -c -DWIN32 -D_GNU_SOURCE=1 -D_REENTRANT -DUTF8_CAPTION -DUSE_CDROM -DUSE_OGG_VORBIS -DUSE_SMPEG -DUSE_LUA
+CFLAGS += -c -DWIN32 -D_GNU_SOURCE=1 -D_REENTRANT -DUTF8_CAPTION -DUSE_CDROM -DUSE_OGG_VORBIS
 CFLAGS += -I$startdir/lib/usr/include/SDL -I$startdir/lib/usr/include/smpeg
 LIBS += -L$startdir/lib/usr/lib
 LIBS += -static -static-libgcc -static-libstdc++ -lmingw32 -lSDLmain -lSDL_image -lwebp -lgif -ltiff -ljpeg -lpng -lSDL_mixer -lFLAC++ -lFLAC -lvorbisfile -lvorbis -logg -lmikmod -lSDL_ttf -lharfbuzz -lfreetype -lSDL -lpthread -lsmpeg -llua -lbz2 -lz -lwinmm -lddraw -ldxguid -lgdi32 -mwindows
 OBJSUFFIX = .o
-EXT_OBJS += LUAHandler\$(OBJSUFFIX)
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
 TARGET = onscripter
