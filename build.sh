@@ -449,6 +449,7 @@ CFLAGS += -I$startdir/lib/usr/include/SDL -I$startdir/lib/usr/include/smpeg
 LIBS += -L$startdir/lib/usr/lib
 LIBS += -static -static-libgcc -static-libstdc++ -lmingw32 -lSDLmain -lSDL_image -lwebp -lgif -ltiff -ljpeg -lpng -lSDL_mixer -lFLAC++ -lFLAC -lvorbisfile -lvorbis -logg -lmikmod -lSDL_ttf -lharfbuzz -lfreetype -lSDL -lpthread -lsmpeg -llua -lbz2 -lz -lwinmm -lddraw -ldxguid -lgdi32 -mwindows
 OBJSUFFIX = .o
+EXT_OBJS += LUAHandler\$(OBJSUFFIX)
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
 TARGET = onscripter
