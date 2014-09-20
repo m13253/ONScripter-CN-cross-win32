@@ -289,6 +289,8 @@ build_prepare() {
     echo 'int main(void){return 0;}' >"$startdir/build/SDL_mixer-$ver_SDL_mixer/playwave.c"
 
     msg_info 'Patching SDL_ttf'
+    cd "$startdir/build/SDL_ttf-$ver_SDL_ttf"
+    patch -N -i "$startdir/src/SDL_ttf-patch/bug1433.patch"
     echo 'int main(void){return 0;}' >"$startdir/build/SDL_ttf-$ver_SDL_ttf/glfont.c"
     echo 'int main(void){return 0;}' >"$startdir/build/SDL_ttf-$ver_SDL_ttf/showfont.c"
 
