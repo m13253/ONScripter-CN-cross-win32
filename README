@@ -8,3 +8,8 @@ Then run `./build.sh` and wait.
 
 If anything goes wrong after trying twice,
 please submit an issue attaching build.log.
+
+Problem
+-------
+
+You have to install SDL and smpeg also on your build machine.
