@@ -68,7 +68,7 @@ build_fetch() {
         fi
     else
         msg_info 'git clone ONScripter-CN'
-        git clone --mirror --branch master --depth 1 --single-branch --progress https://github.com/natdon/ONScripter-CN.git "$startdir/src/ONScripter-CN"
+        git clone --mirror --branch master --depth 1 --single-branch --progress https://github.com/m13253/ONScripter-CN.git "$startdir/src/ONScripter-CN"
     fi
 
     if [ ! -e "$startdir/src/SDL-${ver_SDL}.tar.gz" ]
@@ -447,7 +447,7 @@ build_compile() {
 CFLAGS += -c -DWIN32 -D_GNU_SOURCE=1 -D_REENTRANT -DUTF8_CAPTION -DUSE_CDROM -DUSE_OGG_VORBIS -DUSE_SMPEG -DUSE_LUA
 CFLAGS += -I$startdir/lib/usr/include/SDL -I$startdir/lib/usr/include/smpeg
 LIBS += -L$startdir/lib/usr/lib
-LIBS += -static -static-libgcc -static-libstdc++ -lmingw32 -lSDLmain -lSDL_image -lwebp -lgif -ltiff -ljpeg -lpng -lSDL_mixer -lFLAC++ -lFLAC -lvorbisfile -lvorbis -logg -lmikmod -lSDL_ttf -lharfbuzz -lfreetype -lSDL -lpthread -lsmpeg -llua5.1 -lbz2 -lz -lwinmm -lddraw -ldxguid -lgdi32 -mwindows
+LIBS += -static -static-libgcc -static-libstdc++ -lmingw32 -lSDLmain -lSDL_image -lwebp -lgif -ltiff -ljpeg -lpng -lSDL_mixer -lFLAC++ -lFLAC -lvorbisfile -lvorbis -logg -lmikmod -lSDL_ttf -lharfbuzz -lfreetype -lSDL -lpthread -lsmpeg -llua51 -lbz2 -lz -lwinmm -lddraw -ldxguid -lgdi32 -mwindows
 OBJSUFFIX = .o
 CC = $HOSTARCH-g++
 LD = $HOSTARCH-g++ -o
