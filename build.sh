@@ -305,10 +305,10 @@ build_compile() {
     export AR="$HOSTARCH-gcc-ar"
     export CC="$HOSTARCH-gcc"
     export CXX="$HOSTARCH-g++"
-    export CFLAGS="$CFLAGS -I$startdir/lib/usr/include -L$startdir/lib/usr/lib -O2 -ffunction-sections"
-    export CXXLAGS="$CXXFLAGS -I$startdir/lib/usr/include -L$startdir/lib/usr/lib -O2 -ffunction-sections"
+    export CFLAGS="$CFLAGS -I$startdir/lib/usr/include -L$startdir/lib/usr/lib -O2"
+    export CXXLAGS="$CXXFLAGS -I$startdir/lib/usr/include -L$startdir/lib/usr/lib -O2"
     export CPPFLAGS="$CPPFLAGS -I$startdir/lib/usr/include"
-    export LDFLAGS="$LDFLAGS -L$startdir/lib/usr/lib -Wl,--gc-sections"
+    export LDFLAGS="$LDFLAGS -L$startdir/lib/usr/lib"
     export MAKEFLAGS="$MAKEFLAGS -j$(nproc || echo 1)"
     export PKG_CONFIG_PATH="$startdir/lib/usr/lib/pkgconfig"
 
