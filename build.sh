@@ -302,14 +302,14 @@ build_compile() {
     [ "$build_envcheck_ok" != "1" ] && build_envcheck
     cd "$startdir"
     msg_info 'Start building'
-    export AR="$HOSTARCH-ar"
+    export AR="$HOSTARCH-gcc-ar"
     export CC="$HOSTARCH-gcc"
     export CXX="$HOSTARCH-g++"
-    export CFLAGS="-I$startdir/lib/usr/include -L$startdir/lib/usr/lib $CFLAGS"
-    export CXXLAGS="-I$startdir/lib/usr/include -L$startdir/lib/usr/lib $CXXFLAGS"
-    export CPPFLAGS="-I$startdir/lib/usr/include $CPPFLAGS"
-    export LDFLAGS="-L$startdir/lib/usr/lib $LDFLAGS"
-    export MAKEFLAGS="-j$(nproc || echo 1) $MAKEFLAGS"
+    export CFLAGS="$CFLAGS -I$startdir/lib/usr/include -L$startdir/lib/usr/lib -O2 -flto -ffat-lto-objects -fuse-linker-plugin"
+    export CXXLAGS="$CXXFLAGS -I$startdir/lib/usr/include -L$startdir/lib/usr/lib -O2 -flto -ffat-lto-objects -fuse-linker-plugin"
+    export CPPFLAGS="$CPPFLAGS -I$startdir/lib/usr/include"
+    export LDFLAGS="$LDFLAGS -L$startdir/lib/usr/lib"
+    export MAKEFLAGS="$MAKEFLAGS -j$(nproc || echo 1)"
     export PKG_CONFIG_PATH="$startdir/lib/usr/lib/pkgconfig"
 
     msg_info 'Building libiconv'
@@ -387,7 +387,7 @@ build_compile() {
     msg_info 'Building freetype (1 pass)'
     cd "$startdir/build/freetype-$ver_freetype"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --without-harfbuzz
-    make CFLAGS="-c -I$startdir/lib/usr/include/harfbuzz $CPPFLAGS"
+    make CFLAGS="$CPPFLAGS -c -I$startdir/lib/usr/include/harfbuzz"
     make install
     make distclean
 
@@ -400,7 +400,7 @@ build_compile() {
     msg_info 'Building freetype (2 pass)'
     cd "$startdir/build/freetype-$ver_freetype"
     ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --with-harfbuzz
-    make CFLAGS="-c -I$startdir/lib/usr/include/harfbuzz $CPPFLAGS"
+    make CFLAGS="$CPPFLAGS -c -I$startdir/lib/usr/include/harfbuzz"
     make install
 
     msg_info 'Building lua'
@@ -437,8 +437,8 @@ build_compile() {
 
     msg_info 'Building SDL_ttf'
     cd "$startdir/build/SDL_ttf-$ver_SDL_ttf"
-    CFLAGS="-lstdc++ $CFLAGS" ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-sdltest
-    make CFLAGS="$(pkg-config freetype2 --cflags) -I$startdir/lib/usr/include/SDL -lstdc++ $CFLAGS"
+    CFLAGS="$CFLAGS -lstdc++" ./configure --prefix "$startdir/lib/usr" --host "$HOSTARCH" --disable-shared --enable-static --disable-sdltest
+    make CFLAGS="$CFLAGS $(pkg-config freetype2 --cflags) -I$startdir/lib/usr/include/SDL -lstdc++"
     make install
 
     msg_info 'Building ONScripter-CN'
